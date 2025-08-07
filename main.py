@@ -55,9 +55,10 @@ def webhook():
     """Handle incoming Telegram webhook requests"""
     try:
         update_data = request.get_json()
+        logger.info(f"Received webhook update from Telegram")
         if update_data:
-            # Run the async function in the event loop
-            asyncio.run(bot.handle_webhook_update(update_data))
+            # Use sync handling for compatibility with python-telegram-bot 13.15
+            bot.handle_webhook_update(update_data)
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
         logger.error(f"Error handling webhook: {e}")
@@ -112,6 +113,43 @@ def set_webhook():
     except Exception as e:
         logger.error(f"Error setting webhook: {e}")
         return jsonify({'error': 'Failed to set webhook'}), 500
+
+@app.route('/webhook-info', methods=['GET'])
+def webhook_info():
+    """Get current webhook information"""
+    try:
+        webhook_data = bot.bot.get_webhook_info()
+        return jsonify({
+            'url': webhook_data.url,
+            'has_custom_certificate': webhook_data.has_custom_certificate,
+            'pending_update_count': webhook_data.pending_update_count,
+            'last_error_date': str(webhook_data.last_error_date) if webhook_data.last_error_date else None,
+            'last_error_message': webhook_data.last_error_message,
+            'max_connections': webhook_data.max_connections,
+            'allowed_updates': webhook_data.allowed_updates
+        }), 200
+    except Exception as e:
+        logger.error(f"Error getting webhook info: {e}")
+        return jsonify({'error': 'Failed to get webhook info', 'details': str(e)}), 500
+
+@app.route('/test-translation', methods=['POST'])
+def test_translation():
+    """Test endpoint for translation functionality"""
+    try:
+        data = request.get_json()
+        text = data.get('text', 'Hello world')
+        target_lang = data.get('target_lang', 'hi')
+        
+        translated = bot.translation_service.translate(text, target_lang)
+        return jsonify({
+            'original': text,
+            'translated': translated,
+            'target_language': target_lang,
+            'success': translated is not None
+        }), 200
+    except Exception as e:
+        logger.error(f"Error in test translation: {e}")
+        return jsonify({'error': str(e)}), 500
 
 def setup_webhook():
     """Set up webhook if running in production"""
