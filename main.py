@@ -2,6 +2,7 @@
 import os
 import logging
 import sys
+import asyncio
 from flask import Flask, request, jsonify
 from bot import TranslationBot
 
@@ -38,7 +39,8 @@ def webhook():
     try:
         update_data = request.get_json()
         if update_data:
-            bot.handle_webhook_update(update_data)
+            # Run the async function in the event loop
+            asyncio.run(bot.handle_webhook_update(update_data))
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
         logger.error(f"Error handling webhook: {e}")

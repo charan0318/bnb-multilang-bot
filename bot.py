@@ -5,6 +5,7 @@ import time
 from typing import Dict, Optional
 import requests
 from telegram import Bot, Update
+from telegram.ext import Application
 from translation_service import TranslationService
 from config import Config
 
@@ -37,12 +38,12 @@ class TranslationBot:
         except Exception as e:
             logger.error(f"Error setting webhook: {e}")
 
-    def handle_webhook_update(self, update_data: dict):
+    async def handle_webhook_update(self, update_data: dict):
         """Handle incoming webhook updates"""
         try:
             update = Update.de_json(update_data, self.bot)
             if update.message:
-                self.handle_message(update.message)
+                await self.handle_message(update.message)
         except Exception as e:
             logger.error(f"Error processing update: {e}")
 
@@ -82,7 +83,7 @@ class TranslationBot:
 
         return text.strip()
 
-    def send_help_message(self, chat_id: int, reply_to_message_id: int):
+    async def send_help_message(self, chat_id: int, reply_to_message_id: int):
         """Send help message with available commands"""
         languages_list = []
         for cmd in self.config.get_supported_commands():
@@ -109,14 +110,14 @@ Reply to any message with a language command to translate it.
 
 Ready to break language barriers! 🌍"""
 
-        self.bot.send_message(
+        await self.bot.send_message(
             chat_id=chat_id,
             text=help_text,
             reply_to_message_id=reply_to_message_id,
             parse_mode='Markdown'
         )
 
-    def handle_message(self, message):
+    async def handle_message(self, message):
         """Handle incoming messages"""
         try:
             text = self.extract_text_content(message)
@@ -133,12 +134,12 @@ Ready to break language barriers! 🌍"""
             if not language_code:
                 # Handle help command or unknown command
                 if command in ['/start', '/help']:
-                    self.send_help_message(message.chat.id, message.message_id)
+                    await self.send_help_message(message.chat.id, message.message_id)
                 return
 
             # If no reply message, send instructions
             if not message.reply_to_message:
-                self.bot.send_message(
+                await self.bot.send_message(
                     chat_id=message.chat.id,
                     text=f"🔄 To translate a message to {self.config.get_language_name(command)}, reply to any message with `{command}`\n\nSupported languages: {', '.join(self.config.get_supported_commands())}",
                     reply_to_message_id=message.message_id,
@@ -148,7 +149,7 @@ Ready to break language barriers! 🌍"""
 
             # Rate limiting check
             if self.is_rate_limited(message.from_user.id, message.chat.id):
-                self.bot.send_message(
+                await self.bot.send_message(
                     chat_id=message.chat.id,
                     text="⏳ Please wait a moment before requesting another translation.",
                     reply_to_message_id=message.message_id
@@ -158,7 +159,7 @@ Ready to break language barriers! 🌍"""
             # Extract text from replied message
             original_text = self.extract_text_content(message.reply_to_message)
             if not original_text:
-                self.bot.send_message(
+                await self.bot.send_message(
                     chat_id=message.chat.id,
                     text="❌ Cannot translate this message - no text content found.",
                     reply_to_message_id=message.message_id
@@ -167,7 +168,7 @@ Ready to break language barriers! 🌍"""
 
             # Check message length
             if len(original_text) > self.config.MAX_MESSAGE_LENGTH:
-                self.bot.send_message(
+                await self.bot.send_message(
                     chat_id=message.chat.id,
                     text=f"❌ Message too long (max {self.config.MAX_MESSAGE_LENGTH} characters).",
                     reply_to_message_id=message.message_id
@@ -182,7 +183,7 @@ Ready to break language barriers! 🌍"""
                 translated_text = self.translation_service.translate(original_text, language_code)
 
                 if not translated_text:
-                    self.bot.send_message(
+                    await self.bot.send_message(
                         chat_id=message.chat.id,
                         text="❌ Translation failed. Please try again.",
                         reply_to_message_id=message.message_id
@@ -195,7 +196,7 @@ Ready to break language barriers! 🌍"""
                 # Send translation
                 response_text = f"🔄 **Translation to {language_name}:**\n\n{translated_text}"
 
-                sent_message = self.bot.send_message(
+                sent_message = await self.bot.send_message(
                     chat_id=message.chat.id,
                     text=response_text,
                     reply_to_message_id=message.reply_to_message.message_id,
@@ -210,7 +211,7 @@ Ready to break language barriers! 🌍"""
 
             except Exception as e:
                 logger.error(f"Translation error: {e}")
-                self.bot.send_message(
+                await self.bot.send_message(
                     chat_id=message.chat.id,
                     text="❌ Translation service unavailable. Please try again later.",
                     reply_to_message_id=message.message_id
