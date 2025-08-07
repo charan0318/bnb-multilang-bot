@@ -37,7 +37,7 @@ This guide will help you deploy the Telegram Translation Bot on Render.
    - **Runtime:** `Python 3`
    - **Branch:** `main` (or your default branch)
    - **Root Directory:** Leave empty if code is in root
-   - **Build Command:** `pip install -r requirements-render.txt`
+   - **Build Command:** `pip install --upgrade pip==23.3.1 && pip install -r requirements-render.txt`
    - **Start Command:** `gunicorn --bind 0.0.0.0:$PORT wsgi:application`
 
 ### Step 2: Configure Environment Variables
