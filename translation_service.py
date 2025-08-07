@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import Optional
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 import time
 
 logger = logging.getLogger(__name__)
