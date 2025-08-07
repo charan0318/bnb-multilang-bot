@@ -3,8 +3,10 @@ services:
     name: telegram-translation-bot
     runtime: python3
     plan: starter
-    buildCommand: pip install -r requirements-render.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT wsgi:application
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements-render.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 wsgi:application
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
