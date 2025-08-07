@@ -8,11 +8,10 @@ logger = logging.getLogger(__name__)
 
 class TranslationService:
     def __init__(self):
-        self.translator = Translator()
         self.last_request_time = 0
         self.min_request_interval = 0.1  # Minimum 100ms between requests
         
-        logger.info("Translation service initialized")
+        logger.info("Translation service initialized with deep-translator")
     
     def _rate_limit(self):
         """Simple rate limiting for Google Translate API"""
@@ -44,20 +43,17 @@ class TranslationService:
             # Apply rate limiting
             self._rate_limit()
             
-            # Perform translation
-            result = self.translator.translate(
-                text.strip(),
-                src=source_language,
-                dest=target_language
-            )
+            # Create translator instance with deep-translator
+            translator = GoogleTranslator(source=source_language, target=target_language)
             
-            if result and result.text:
-                translated_text = result.text.strip()
-                
+            # Perform translation
+            translated_text = translator.translate(text.strip())
+            
+            if translated_text and translated_text.strip():
                 # Log successful translation
-                logger.debug(f"Translated '{text[:50]}...' from {result.src} to {target_language}")
+                logger.debug(f"Translated '{text[:50]}...' to {target_language}")
                 
-                return translated_text
+                return translated_text.strip()
             else:
                 logger.warning(f"Empty translation result for text: {text[:50]}...")
                 return None
@@ -87,9 +83,12 @@ class TranslationService:
         try:
             self._rate_limit()
             
-            detection = self.translator.detect(text.strip())
-            if detection and detection.lang:
-                return detection.lang
+            # Use GoogleTranslator for detection
+            from deep_translator import single_detection
+            detected_lang = single_detection(text.strip(), api_key=None)
+            
+            if detected_lang:
+                return detected_lang
             
         except Exception as e:
             logger.error(f"Language detection failed for text '{text[:50]}...': {e}")
