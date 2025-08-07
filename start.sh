@@ -1,8 +1,17 @@
 
 #!/bin/bash
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies for Render deployment
+pip install -r requirements-render.txt
 
-# Start the application
-python main.py
+# Set production environment
+export FLASK_ENV=production
+
+# Start the application with Gunicorn for production
+if command -v gunicorn &> /dev/null; then
+    echo "Starting with Gunicorn (production mode)..."
+    gunicorn --bind 0.0.0.0:${PORT:-5000} wsgi:app
+else
+    echo "Gunicorn not found, starting with Flask development server..."
+    python main.py
+fi

@@ -1,7 +1,7 @@
 [project]
-name = "repl-nix-workspace"
+name = "telegram-translation-bot"
 version = "0.1.0"
-description = "Add your description here"
+description = "Telegram bot for translating messages to Indian regional languages"
 requires-python = ">=3.11"
 dependencies = [
     "flask>=3.1.1",

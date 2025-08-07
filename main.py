@@ -113,8 +113,8 @@ def set_webhook():
         logger.error(f"Error setting webhook: {e}")
         return jsonify({'error': 'Failed to set webhook'}), 500
 
-if __name__ == '__main__':
-    # Set up webhook if running in production
+def setup_webhook():
+    """Set up webhook if running in production"""
     webhook_url = os.getenv('WEBHOOK_URL')
     if webhook_url:
         try:
@@ -124,15 +124,22 @@ if __name__ == '__main__':
             logger.error(f"Failed to set webhook: {e}")
     else:
         logger.warning("WEBHOOK_URL not set - webhook not configured")
+
+if __name__ == '__main__':
+    # Set up webhook
+    setup_webhook()
     
-    # Start keep-alive thread
-    keep_alive_thread = threading.Thread(target=keep_alive_worker, daemon=True)
-    keep_alive_thread.start()
-    logger.info("Keep-alive worker started")
+    # Start keep-alive thread (only if not using production server)
+    if not os.getenv('GUNICORN_CMD_ARGS'):
+        keep_alive_thread = threading.Thread(target=keep_alive_worker, daemon=True)
+        keep_alive_thread.start()
+        logger.info("Keep-alive worker started")
     
     # Start Flask app
     port = int(os.getenv('PORT', 5000))
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     
     logger.info(f"Starting server on port {port}")
+    
+    # Use development server if running directly
     app.run(host='0.0.0.0', port=port, debug=debug_mode)

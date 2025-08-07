@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: telegram-translation-bot
+    runtime: python3
+    plan: starter
+    buildCommand: pip install -r requirements-render.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        generateValue: true
+      - key: MAX_MESSAGE_LENGTH
+        value: 5000
+      - key: RATE_LIMIT_SECONDS
+        value: 2
+    # Environment variables that need to be set manually:
+    # TELEGRAM_BOT_TOKEN - Get from BotFather
+    # WEBHOOK_URL - Set to your Render app URL (e.g., https://your-app.onrender.com)
