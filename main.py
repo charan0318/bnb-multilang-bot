@@ -56,12 +56,12 @@ def webhook():
     try:
         update_data = request.get_json()
         logger.info(f"Received webhook update from Telegram")
-        if update_data:
+        if update_data and bot:
             # Use sync handling for compatibility with python-telegram-bot 13.15
             bot.handle_webhook_update(update_data)
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
-        logger.error(f"Error handling webhook: {e}")
+        logger.error(f"Error processing webhook: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/health', methods=['GET'])
