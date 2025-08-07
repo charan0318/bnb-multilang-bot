@@ -18,18 +18,37 @@ def setup_production_webhook():
         time.sleep(10)
         
         webhook_url = os.getenv('WEBHOOK_URL')
-        if webhook_url and os.getenv('TELEGRAM_BOT_TOKEN'):
-            try:
-                result = bot.set_webhook(f"{webhook_url}/webhook")
-                if result:
-                    logger.info(f"Production webhook set successfully to: {webhook_url}/webhook")
-                else:
-                    logger.warning("Webhook setup returned False")
-            except Exception as e:
-                logger.error(f"Failed to set production webhook: {e}")
-                # Don't fail the entire app if webhook setup fails
-        else:
-            logger.warning("WEBHOOK_URL or TELEGRAM_BOT_TOKEN not set - webhook not configured")
+        bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
+        
+        if not bot_token:
+            logger.error("TELEGRAM_BOT_TOKEN not found in environment variables")
+            return
+            
+        if not webhook_url:
+            logger.error("WEBHOOK_URL not found in environment variables")
+            return
+            
+        try:
+            # Get current webhook info first
+            webhook_info = bot.bot.get_webhook_info()
+            logger.info(f"Current webhook URL: {webhook_info.url}")
+            
+            target_webhook = f"{webhook_url}/webhook"
+            
+            if webhook_info.url == target_webhook:
+                logger.info("Webhook already configured correctly")
+                return
+            
+            # Set new webhook
+            result = bot.set_webhook(target_webhook)
+            if result:
+                logger.info(f"Production webhook set successfully to: {target_webhook}")
+            else:
+                logger.error("Webhook setup returned False - check bot token and URL validity")
+                
+        except Exception as e:
+            logger.error(f"Failed to set production webhook: {e}")
+            # Don't fail the entire app if webhook setup fails
     
     # Run webhook setup in background thread to avoid blocking startup
     webhook_thread = threading.Thread(target=webhook_setup, daemon=True)

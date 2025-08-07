@@ -29,13 +29,17 @@ class TranslationBot:
     def set_webhook(self, webhook_url: str):
         """Set webhook for the bot"""
         try:
+            logger.info(f"Attempting to set webhook to: {webhook_url}")
             response = self.bot.set_webhook(url=webhook_url)
             if response:
-                logger.info("Webhook set successfully")
+                logger.info(f"Webhook set successfully to: {webhook_url}")
+                return True
             else:
-                logger.error("Failed to set webhook")
+                logger.error(f"Failed to set webhook to: {webhook_url} - Bot API returned False")
+                return False
         except Exception as e:
-            logger.error(f"Error setting webhook: {e}")
+            logger.error(f"Error setting webhook to {webhook_url}: {e}")
+            return False
 
     def handle_webhook_update(self, update_data: dict):
         """Handle incoming webhook updates"""
