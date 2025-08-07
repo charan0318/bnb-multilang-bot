@@ -4,7 +4,7 @@ modules = ["python-3.11"]
 channel = "stable-25_05"
 
 [workflows]
-runButton = "Project"
+runButton = "Fixed Translation Bot Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -23,6 +23,15 @@ author = "agent"
 task = "shell.exec"
 args = "pip install flask python-telegram-bot googletrans==4.0.0rc1 requests && python main.py"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Fixed Translation Bot Server"
+author = 46108377
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install flask python-telegram-bot==20.7 googletrans==4.0.0rc1 requests && python main.py"
 
 [[ports]]
 localPort = 5000

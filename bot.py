@@ -5,7 +5,6 @@ import time
 from typing import Dict, Optional
 import requests
 from telegram import Bot, Update
-from telegram.ext import Application
 from translation_service import TranslationService
 from config import Config
 
