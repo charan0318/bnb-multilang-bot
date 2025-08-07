@@ -40,6 +40,7 @@ class TranslationBot:
     def handle_webhook_update(self, update_data: dict):
         """Handle incoming webhook updates"""
         try:
+            # Create Update object from data for v20+ compatibility
             update = Update.de_json(update_data, self.bot)
             if update.message:
                 self.handle_message_sync(update.message)
