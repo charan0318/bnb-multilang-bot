@@ -31,7 +31,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install flask python-telegram-bot==20.7 googletrans==4.0.0rc1 requests && python main.py"
+args = "pip install -r requirements.txt && python main.py"
 
 [[ports]]
 localPort = 5000
