@@ -152,20 +152,21 @@ def test_translation():
         return jsonify({'error': str(e)}), 500
 
 def setup_webhook():
-    """Set up webhook if running in production"""
+    """Set up webhook if running in development"""
     webhook_url = os.getenv('WEBHOOK_URL')
     if webhook_url:
         try:
             bot.set_webhook(f"{webhook_url}/webhook")
-            logger.info(f"Webhook set to: {webhook_url}/webhook")
+            logger.info(f"Development webhook set to: {webhook_url}/webhook")
         except Exception as e:
             logger.error(f"Failed to set webhook: {e}")
     else:
         logger.warning("WEBHOOK_URL not set - webhook not configured")
 
 if __name__ == '__main__':
-    # Set up webhook
-    setup_webhook()
+    # Only set up webhook when running in development mode
+    if not os.getenv('GUNICORN_CMD_ARGS'):  # Not running under Gunicorn
+        setup_webhook()
     
     # Start keep-alive thread (only if not using production server)
     if not os.getenv('GUNICORN_CMD_ARGS'):
