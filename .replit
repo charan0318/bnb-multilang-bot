@@ -1,0 +1,29 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Translation Bot Server"
+
+[[workflows.workflow]]
+name = "Translation Bot Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install flask python-telegram-bot googletrans==4.0.0rc1 requests && python main.py"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80

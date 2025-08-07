@@ -1,0 +1,68 @@
+{
+    "/hi": {
+        "code": "hi",
+        "name": "Hindi",
+        "native_name": "हिन्दी"
+    },
+    "/ta": {
+        "code": "ta", 
+        "name": "Tamil",
+        "native_name": "தமிழ்"
+    },
+    "/te": {
+        "code": "te",
+        "name": "Telugu", 
+        "native_name": "తెలుగు"
+    },
+    "/bn": {
+        "code": "bn",
+        "name": "Bengali",
+        "native_name": "বাংলা"
+    },
+    "/mr": {
+        "code": "mr",
+        "name": "Marathi",
+        "native_name": "मराठी"
+    },
+    "/gu": {
+        "code": "gu",
+        "name": "Gujarati",
+        "native_name": "ગુજરાતી"
+    },
+    "/kn": {
+        "code": "kn",
+        "name": "Kannada",
+        "native_name": "ಕನ್ನಡ"
+    },
+    "/ml": {
+        "code": "ml",
+        "name": "Malayalam",
+        "native_name": "മലയാളം"
+    },
+    "/pa": {
+        "code": "pa",
+        "name": "Punjabi",
+        "native_name": "ਪੰਜਾਬੀ"
+    },
+    "/or": {
+        "code": "or",
+        "name": "Odia",
+        "native_name": "ଓଡ଼ିଆ"
+    },
+    "/as": {
+        "code": "as",
+        "name": "Assamese",
+        "native_name": "অসমীয়া"
+    },
+    "/ur": {
+        "code": "ur",
+        "name": "Urdu",
+        "native_name": "اردو"
+    },
+    "/sa": {
+        "code": "sa",
+        "name": "Sanskrit",
+        "native_name": "संस्कृत"
+    }
+    
+}
