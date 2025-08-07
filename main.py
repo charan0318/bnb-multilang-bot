@@ -3,6 +3,9 @@ import os
 import logging
 import sys
 import asyncio
+import threading
+import time
+import requests
 from flask import Flask, request, jsonify
 from bot import TranslationBot
 
@@ -24,6 +27,20 @@ if missing_vars:
     sys.exit(1)
 
 app = Flask(__name__)
+
+def keep_alive_worker():
+    """Internal keep-alive worker that pings the health endpoint every 10 minutes"""
+    while True:
+        try:
+            time.sleep(600)  # Wait 10 minutes
+            port = int(os.getenv('PORT', 5000))
+            response = requests.get(f'http://127.0.0.1:{port}/health', timeout=5)
+            if response.status_code == 200:
+                logger.info("Keep-alive ping successful")
+            else:
+                logger.warning(f"Keep-alive ping failed: {response.status_code}")
+        except Exception as e:
+            logger.error(f"Keep-alive ping error: {e}")
 
 # Initialize the bot
 try:
@@ -107,6 +124,11 @@ if __name__ == '__main__':
             logger.error(f"Failed to set webhook: {e}")
     else:
         logger.warning("WEBHOOK_URL not set - webhook not configured")
+    
+    # Start keep-alive thread
+    keep_alive_thread = threading.Thread(target=keep_alive_worker, daemon=True)
+    keep_alive_thread.start()
+    logger.info("Keep-alive worker started")
     
     # Start Flask app
     port = int(os.getenv('PORT', 5000))
