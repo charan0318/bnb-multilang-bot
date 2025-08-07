@@ -33,8 +33,8 @@ def keep_alive_worker():
     while True:
         try:
             time.sleep(600)  # Wait 10 minutes
-            port = int(os.getenv('PORT', 5000))
-            response = requests.get(f'http://127.0.0.1:{port}/health', timeout=5)
+            port = int(os.getenv('PORT', 10000))
+            response = requests.get(f'http://0.0.0.0:{port}/health', timeout=5)
             if response.status_code == 200:
                 logger.info("Keep-alive ping successful")
             else:
@@ -175,7 +175,7 @@ if __name__ == '__main__':
         logger.info("Keep-alive worker started")
     
     # Start Flask app
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 10000))
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     
     logger.info(f"Starting server on port {port}")

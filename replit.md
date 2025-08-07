@@ -31,6 +31,13 @@ A Telegram bot that provides instant translation of group messages into Indian r
 - ✓ **Runtime Target**: Set to Python 3.12.3 for modern compatibility without deprecated modules
 - ✓ **Tested Working**: Translation functionality verified with Hindi translation test
 
+### Render Deployment Timeout Fixes (August 7, 2025)
+- ✓ **Host Binding**: Fixed server to bind to `0.0.0.0` instead of localhost per Render docs
+- ✓ **Port Configuration**: Updated default port to 10000 (Render's default) in all entry points
+- ✓ **Gunicorn Timeout**: Increased timeout from 60s to 120s to prevent worker timeouts  
+- ✓ **Keep-Alive Settings**: Added `--keep-alive 2` and `--max-requests 1000` for stability
+- ✓ **Internal Pings**: Fixed keep-alive worker to ping `0.0.0.0` instead of `127.0.0.1`
+
 ## Deployment Platform
 - **Target**: Render (platform-independent, no Replit dependencies)
 - **Runtime**: Python 3.11+
